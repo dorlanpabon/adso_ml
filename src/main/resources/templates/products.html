@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Productos</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+</head>
+
+<body>
+  <main class="container">
+    <nav>
+      <ul>
+        <li><strong>Productos</strong></li>
+      </ul>
+      <ul>
+        <li><a th:href="@{/products(create=1)}">Crear producto</a></li>
+        <li><a href="/users">Usuarios</a></li>
+        <li>
+          <form action="/logout" method="post">
+            <button type="submit">Cerrar sesion</button>
+          </form>
+        </li>
+      </ul>
+    </nav>
+
+    <p>Bienvenido a nuestra tienda de productos.</p>
+
+    <div th:if="${param.error}" th:text="${param.error}"></div>
+    <div th:if="${param.success}" th:text="${param.success}"></div>
+
+    <dialog open th:if="${param.create}">
+      <article>
+        <header>
+          <strong>Nuevo producto</strong>
+          <form action="/products" method="get">
+            <button type="submit">Cerrar</button>
+          </form>
+        </header>
+        <form action="/products/create" method="post">
+          <div>
+            <label for="create-name">Nombre:</label>
+            <input type="text" id="create-name" name="name" required>
+          </div>
+          <div>
+            <label for="create-description">Descripcion:</label>
+            <input type="text" id="create-description" name="description" required>
+          </div>
+          <div>
+            <label for="create-price">Precio:</label>
+            <input type="number" step="0.01" id="create-price" name="price" required>
+          </div>
+          <footer>
+            <button type="submit">Guardar</button>
+          </footer>
+        </form>
+      </article>
+    </dialog>
+
+    <dialog open th:if="${editProduct != null}">
+      <article>
+        <header>
+          <strong>Editar producto</strong>
+          <form action="/products" method="get">
+            <button type="submit">Cerrar</button>
+          </form>
+        </header>
+        <form action="/products/update" method="post">
+          <input type="hidden" name="productId" th:value="${editProduct.productId}">
+          <div>
+            <label for="edit-name">Nombre:</label>
+            <input type="text" id="edit-name" name="name" th:value="${editProduct.name}" required>
+          </div>
+          <div>
+            <label for="edit-description">Descripcion:</label>
+            <input type="text" id="edit-description" name="description" th:value="${editProduct.description}" required>
+          </div>
+          <div>
+            <label for="edit-price">Precio:</label>
+            <input type="number" step="0.01" id="edit-price" name="price" th:value="${editProduct.price}" required>
+          </div>
+          <footer>
+            <button type="submit">Actualizar</button>
+          </footer>
+        </form>
+      </article>
+    </dialog>
+
+    <!-- Table productos -->
+    <table border="1">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Descripción</th>
+          <th>Precio</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="product : ${products}">
+          <td th:text="${product.productId}">1</td>
+          <td th:text="${product.name}">Producto 1</td>
+          <td th:text="${product.description}">Descripción del producto 1</td>
+          <td th:text="${product.price}">10.00</td>
+          <td>
+            <a th:href="@{/products(editId=${product.productId})}">Editar</a>
+            <form action="/products/delete" method="post">
+              <input type="hidden" name="productId" th:value="${product.productId}">
+              <button type="submit">Eliminar</button>
+            </form>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </main>
+</body>
+
+</html>

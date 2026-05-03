@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Usuarios</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+</head>
+
+<body>
+  <main class="container">
+    <nav>
+      <ul>
+        <li><strong>Usuarios</strong></li>
+      </ul>
+      <ul>
+        <li><a th:href="@{/users(create=1)}">Crear usuario</a></li>
+        <li><a href="/products">Productos</a></li>
+        <li>
+          <form action="/logout" method="post">
+            <button type="submit">Cerrar sesion</button>
+          </form>
+        </li>
+      </ul>
+    </nav>
+
+    <p>Bienvenido a la sección de usuarios.</p>
+
+    <div th:if="${param.error}" th:text="${param.error}"></div>
+    <div th:if="${param.success}" th:text="${param.success}"></div>
+
+    <dialog open th:if="${param.create}">
+      <article>
+        <header>
+          <strong>Nuevo usuario</strong>
+          <form action="/users" method="get">
+            <button type="submit">Cerrar</button>
+          </form>
+        </header>
+        <form action="/users/create" method="post">
+          <div>
+            <label for="create-username">Usuario:</label>
+            <input type="text" id="create-username" name="username" required>
+          </div>
+          <div>
+            <label for="create-password">Contrasena:</label>
+            <input type="password" id="create-password" name="password" required>
+          </div>
+          <footer>
+            <button type="submit">Guardar</button>
+          </footer>
+        </form>
+      </article>
+    </dialog>
+
+    <dialog open th:if="${editUser != null}">
+      <article>
+        <header>
+          <strong>Editar usuario</strong>
+          <form action="/users" method="get">
+            <button type="submit">Cerrar</button>
+          </form>
+        </header>
+        <form action="/users/update" method="post">
+          <input type="hidden" name="userId" th:value="${editUser.userId}">
+          <div>
+            <label for="edit-username">Usuario:</label>
+            <input type="text" id="edit-username" name="username" th:value="${editUser.username}" required>
+          </div>
+          <div>
+            <label for="edit-password">Contrasena (opcional):</label>
+            <input type="password" id="edit-password" name="password" placeholder="dejar vacio para mantener">
+          </div>
+          <footer>
+            <button type="submit">Actualizar</button>
+          </footer>
+        </form>
+      </article>
+    </dialog>
+
+    <!-- Table usuarios -->
+    <table border="1">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre de usuario</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Aquí puedes agregar filas de usuarios dinámicamente -->
+        <tr th:each="user : ${users}">
+          <td th:text="${user.userId}">1</td>
+          <td th:text="${user.username}">Usuario 1</td>
+          <td>
+            <a th:href="@{/users(editId=${user.userId})}">Editar</a>
+            <form action="/users/delete" method="post">
+              <input type="hidden" name="userId" th:value="${user.userId}">
+              <button type="submit">Eliminar</button>
+            </form>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </main>
+</body>
+
+</html>

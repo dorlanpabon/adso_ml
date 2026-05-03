@@ -1,0 +1,19 @@
+spring:
+  session:
+    store-type: jdbc
+    jdbc:
+      initialize-schema: always
+      platform: mysql
+  application:
+    name: adso_ml
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/adso_ml
+    username: root
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+server:
+  port: 8080
