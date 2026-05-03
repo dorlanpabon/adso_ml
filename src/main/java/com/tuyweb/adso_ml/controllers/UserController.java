@@ -1,6 +1,5 @@
 package com.tuyweb.adso_ml.controllers;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,11 +11,8 @@ import com.tuyweb.adso_ml.dao.UserPublic;
 import com.tuyweb.adso_ml.model.User;
 import com.tuyweb.adso_ml.repositories.UserRepository;
 
-import static com.tuyweb.adso_ml.helpers.Common.isAuthenticated;
-
 import java.util.List;
 
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
 @Controller
@@ -24,14 +20,11 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 
   private final UserRepository userRepository;
-  private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+  private final PasswordEncoder passwordEncoder;
 
   @GetMapping("/users")
-  String users(HttpSession session, Model model,
+  String users(Model model,
       @RequestParam(name = "editId", required = false) Long editId) {
-    if (!isAuthenticated(session)) {
-      return "redirect:/";
-    }
     List<UserPublic> users = userRepository.findAll().stream()
         .map(user -> new UserPublic(user.getUserId(), user.getUsername()))
         .toList();
@@ -45,10 +38,7 @@ public class UserController {
   }
 
   @PostMapping("/users/create")
-  String createUser(String username, String password, HttpSession session) {
-    if (!isAuthenticated(session)) {
-      return "redirect:/";
-    }
+  String createUser(String username, String password) {
     if (username == null || username.isBlank() || password == null || password.isBlank()) {
       return "redirect:/users?error=Missing%20data";
     }
@@ -63,10 +53,7 @@ public class UserController {
   }
 
   @PostMapping("/users/update")
-  String updateUser(Long userId, String username, String password, HttpSession session) {
-    if (!isAuthenticated(session)) {
-      return "redirect:/";
-    }
+  String updateUser(Long userId, String username, String password) {
     User user = userRepository.findById(userId).orElse(null);
     if (user == null) {
       return "redirect:/users?error=User%20not%20found";
@@ -84,10 +71,7 @@ public class UserController {
   }
 
   @PostMapping("/users/delete")
-  String deleteUser(Long userId, HttpSession session) {
-    if (!isAuthenticated(session)) {
-      return "redirect:/";
-    }
+  String deleteUser(Long userId) {
     userRepository.deleteById(userId);
     return "redirect:/users?success=User%20deleted";
   }
